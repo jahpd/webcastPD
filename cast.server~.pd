@@ -1,0 +1,141 @@
+#N canvas 571 34 869 653 10;
+#N canvas 529 537 450 300 init 0;
+#X obj 79 37 loadbang;
+#X obj 9 99 s \$0-initSamplerate;
+#X msg 9 73 44100;
+#X msg 28 123 2;
+#X msg 45 193 0.6;
+#X obj 28 152 s \$0-initChannels;
+#X obj 46 221 s \$0-initQuality;
+#X connect 0 0 2 0;
+#X connect 0 0 3 0;
+#X connect 0 0 4 0;
+#X connect 2 0 1 0;
+#X connect 3 0 5 0;
+#X connect 4 0 6 0;
+#X restore 642 10 pd init;
+#X obj 1 290 cnv 15 300 60 empty empty Ogg_quality 5 10 0 10 -204786
+-66577 0;
+#X obj 1 1 cnv 15 300 120 empty empty cast.server~ 5 12 0 14 -233017
+-66577 0;
+#X symbolatom 57 35 15 0 0 2 IP #0-initIP #0-IP;
+#X symbolatom 234 36 10 0 0 2 mountpoint #0-initMountpoint #0-mountpoint
+;
+#X text 152 35 :;
+#X text 7 36 http://;
+#X text 224 36 /;
+#X obj 1 169 cnv 15 300 120 empty empty tags 5 12 0 10 -262130 -66577
+0;
+#X symbolatom 8 207 10 0 0 2 Artist - #0-artist;
+#X symbolatom 77 206 10 0 0 2 Title - #0-title;
+#X symbolatom 147 206 10 0 0 2 Performer - #0-performer;
+#X symbolatom 216 205 10 0 0 2 Desription - #0-description;
+#X symbolatom 8 247 10 0 0 2 Genre - #0-genre;
+#X symbolatom 77 246 10 0 0 2 Location - #0-location;
+#X symbolatom 147 246 10 0 0 2 Copyrigth - #0-copyright;
+#X symbolatom 216 245 10 0 0 2 Contact - #0-contact;
+#X floatatom 6 329 10 22050 44100 2 Samplerate #0-initSamplerate #0-samplerate
+;
+#X floatatom 75 329 5 1 2 2 Channels #0-initChannels #0-channels;
+#X floatatom 131 329 5 0 1 2 Quality_factor #0-initQuality #0-quality
+;
+#X symbolatom 10 69 15 0 0 2 password - #0-passwd;
+#X obj 216 93 bng 15 250 50 0 \$0-printinfo empty print_info 17 7 0
+10 -262144 -1 -1;
+#X obj 9 95 bng 15 250 50 0 \$0-server0 empty JRoar_server 17 7 0 10
+-262144 -1 -1;
+#X obj 103 94 bng 15 250 50 0 \$0-server1 empty IceCast2_server 17
+7 0 10 -262144 -1 -1;
+#X obj 1 118 cnv 15 300 50 empty empty connection 5 12 0 10 -204800
+-66577 0;
+#X obj 152 143 tgl 15 0 empty \$0-connected Connected 17 7 0 10 -262144
+-1 -1 1 1;
+#X obj 6 144 bng 15 250 50 0 \$0-connect empty Connect 17 7 0 10 -257985
+-1 -1;
+#X obj 70 144 bng 15 250 50 0 \$0-disconnect empty disconnect 17 7
+0 10 -258113 -1 -1;
+#X obj 324 268 oggcast~;
+#X obj 324 4 inlet~ L;
+#X obj 382 4 inlet~ R;
+#X obj 408 68 r \$0-IP;
+#X obj 569 66 r \$0-port;
+#X obj 456 67 r \$0-mountpoint;
+#X obj 421 96 t b s;
+#X msg 408 140 set connect \$1 \$2 \$3;
+#X msg 408 162 connect 91.121.134.23 _ovarc.ogg 8001;
+#X obj 397 229 r \$0-server0;
+#X msg 396 251 server 0;
+#X obj 476 230 r \$0-server1;
+#X msg 476 251 server 1;
+#X msg 560 252 print;
+#X obj 560 231 r \$0-printinfo;
+#X obj 324 299 s \$0-connected;
+#X floatatom 228 143 10 0 0 2 Ogg_pages #0-oggpages -;
+#X obj 369 323 s \$0-oggpages;
+#X obj 542 140 r \$0-connect;
+#X obj 622 140 r \$0-disconnect;
+#X msg 623 184 disconnect;
+#X obj 2 350 cnv 15 313 120 empty empty check_audio_server 5 14 0 10
+-228856 -66577 0;
+#X obj 6 378 cast.client.internal~;
+#X symbolatom 160 34 10 0 0 2 port #0-initPort #0-port;
+#X obj 464 96 t b s;
+#X obj 408 120 pack s s s;
+#X obj 328 364 sel 1 0;
+#X obj 334 132 r \$0-passwd;
+#X msg 335 180 passwd \$1;
+#X msg 498 373 wait connecting internal server....;
+#X obj 500 399 print ===internal server===;
+#X obj 501 352 t b;
+#X obj 5 527 dac~;
+#X obj 5 502 spigot~;
+#X obj 62 503 spigot~;
+#X obj 11 450 tgl 15 0 empty empty passa_audio 17 7 0 10 -262144 -1
+-1 1 1;
+#X obj 330 396 delay 1500;
+#X obj 412 396 delay 1500;
+#X msg 348 462 disconnect;
+#X msg 329 436 connect 91.121.134.23 _ovarc.ogg 8000;
+#X connect 25 0 54 0;
+#X connect 28 0 43 0;
+#X connect 28 1 45 0;
+#X connect 29 0 28 0;
+#X connect 30 0 28 1;
+#X connect 31 0 53 0;
+#X connect 32 0 52 0;
+#X connect 33 0 34 0;
+#X connect 34 0 53 0;
+#X connect 34 1 53 1;
+#X connect 35 0 36 0;
+#X connect 35 0 67 0;
+#X connect 36 0 28 0;
+#X connect 37 0 38 0;
+#X connect 38 0 28 0;
+#X connect 39 0 40 0;
+#X connect 40 0 28 0;
+#X connect 41 0 28 0;
+#X connect 42 0 41 0;
+#X connect 46 0 36 0;
+#X connect 47 0 48 0;
+#X connect 48 0 28 0;
+#X connect 50 0 61 0;
+#X connect 50 1 62 0;
+#X connect 52 0 53 0;
+#X connect 52 1 53 2;
+#X connect 53 0 35 0;
+#X connect 54 0 64 0;
+#X connect 54 1 65 0;
+#X connect 54 2 59 0;
+#X connect 55 0 56 0;
+#X connect 56 0 28 0;
+#X connect 57 0 58 0;
+#X connect 59 0 57 0;
+#X connect 61 1 60 0;
+#X connect 62 1 60 1;
+#X connect 63 0 61 1;
+#X connect 63 0 62 1;
+#X connect 64 0 67 0;
+#X connect 65 0 66 0;
+#X connect 66 0 50 0;
+#X connect 67 0 50 0;
+#X coords 0 -1 1 1 317 472 1 0 0;

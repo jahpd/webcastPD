@@ -1,0 +1,40 @@
+#N canvas 409 368 549 446 10;
+#X obj 9 327 oggread~ 2;
+#X msg 12 152 set open \$1;
+#X msg 12 198 open /Users/guilherme/Music/musicas/Erudito/sussurro/Rodolfo
+Caesar + Atores Bailarinos\, 198403Sinfonia1.ogg;
+#X obj 106 20 bng 15 250 50 0 empty empty stop 17 7 0 10 -262144 -1
+-1;
+#X obj 15 41 hsl 135 15 0 100 0 0 empty empty outL 5 8 0 10 -262144
+-1 -1 0 1;
+#X obj 15 61 hsl 135 15 0 100 0 0 empty empty outR 5 8 0 10 -262144
+-1 -1 0 1;
+#X obj 62 20 bng 15 250 50 0 empty empty play 17 7 0 10 -262144 -1
+-1;
+#X obj 152 332 env~;
+#X obj 185 332 env~;
+#X obj 9 353 outlet~;
+#X obj 60 352 outlet~;
+#X msg 89 147 1;
+#X msg 133 147 0;
+#X obj 89 120 t b b;
+#X obj 13 119 openpanel;
+#X obj 12 20 bng 15 250 50 0 empty empty open 17 7 0 10 -262144 -1
+-1;
+#X connect 0 0 7 0;
+#X connect 0 0 9 0;
+#X connect 0 1 8 0;
+#X connect 0 1 10 0;
+#X connect 1 0 2 0;
+#X connect 2 0 0 0;
+#X connect 3 0 12 0;
+#X connect 6 0 13 0;
+#X connect 7 0 4 0;
+#X connect 8 0 5 0;
+#X connect 11 0 0 0;
+#X connect 12 0 0 0;
+#X connect 13 0 11 0;
+#X connect 13 1 2 0;
+#X connect 14 0 1 0;
+#X connect 15 0 14 0;
+#X coords 0 -1 1 1 165 80 1 0 0;

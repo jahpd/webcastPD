@@ -1,0 +1,32 @@
+#N canvas 539 65 702 518 10;
+#X obj 6 42 playlist all 400 300 {Helvetica 10 bold} #457782 yellow
+black red;
+#X obj 408 42 bng 15 250 50 0 empty empty play 17 7 0 10 -262144 -1
+-1;
+#X obj 408 61 bng 15 250 50 0 empty empty stop 17 7 0 10 -262144 -1
+-1;
+#X obj 408 104 tgl 15 0 empty empty enable_auto_next 17 7 0 10 -262144
+-1 -1 0 1;
+#X obj 6 352 player.internal.ogg~;
+#X obj 522 363 spigot;
+#X obj 522 397 counter;
+#X obj 522 420 t b f;
+#X msg 549 441 seek \$1;
+#X obj 8 427 outlet~;
+#X obj 199 431 outlet~;
+#X obj 408 83 bng 15 250 50 0 empty empty play_next 17 7 0 10 -262144
+-1 -1;
+#X connect 0 0 4 0;
+#X connect 1 0 4 1;
+#X connect 2 0 4 2;
+#X connect 3 0 5 1;
+#X connect 4 0 9 0;
+#X connect 4 1 10 0;
+#X connect 4 2 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 7 0 1 0;
+#X connect 7 1 8 0;
+#X connect 8 0 0 0;
+#X connect 11 0 6 0;
+#X coords 0 -1 1 1 523 450 1 0 0;
