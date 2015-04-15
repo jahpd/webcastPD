@@ -1,5 +1,5 @@
-#N canvas 372 22 943 852 10;
-#X obj -2 429 cast.server~;
-#X obj -2 4 ./cast.util/playlist.ogg~;
+#N canvas 337 82 943 718 10;
+#X obj 11 158 cast.server~;
+#X obj 12 132 adc~;
 #X connect 1 0 0 0;
 #X connect 1 1 0 1;
