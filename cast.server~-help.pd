@@ -1,5 +1,14 @@
-#N canvas 337 82 943 718 10;
-#X obj 11 158 cast.server~;
-#X obj 12 132 adc~;
+#N canvas 331 86 943 718 10;
+#X obj 9 167 cast.server~;
+#X obj 15 12 adc~;
+#X obj 445 63 ./filter.binaural~;
+#X obj 444 169 cast.server~;
+#X text 13 528 Transmissao sem filtragem binaural;
+#X text 443 526 Transmissao com filtragem binaural (para fones de ouvido)
+;
+#X connect 1 0 2 0;
 #X connect 1 0 0 0;
+#X connect 1 1 2 1;
 #X connect 1 1 0 1;
+#X connect 2 0 3 0;
+#X connect 2 1 3 1;
