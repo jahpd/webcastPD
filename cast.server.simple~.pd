@@ -1,4 +1,4 @@
-#N canvas 1 50 638 359 10;
+#N canvas 1 50 1278 358 10;
 #X obj 36 61 oggcast~ 2 512;
 #X obj 37 32 inlet~;
 #X obj 116 30 inlet~;
@@ -13,7 +13,9 @@
 #X obj 339 60 t b b b b b;
 #X msg 392 114 passwd rxw3k;
 #X msg 317 211 connect giss.tv radiolabic.ogg 8000;
+#X obj 36 188 outlet;
 #X connect 0 0 4 0;
+#X connect 0 0 14 0;
 #X connect 0 1 5 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 1;
