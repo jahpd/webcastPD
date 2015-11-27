@@ -98,4 +98,4 @@ f.close()
 g.close()
 
 #from subprocess import call
-call(["pd-extended", "-nogui", "main.pd"])
+call(["pd-extended", "-nogui", "-noadc", "-alsa", "main.pd"])

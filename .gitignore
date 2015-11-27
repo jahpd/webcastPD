@@ -1,0 +1,7 @@
+gen*
+**#
+gi.pd
+giss-pdp-dv.pd
+*.log
+main.pd
+**.*~
