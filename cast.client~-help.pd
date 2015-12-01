@@ -1,9 +1,0 @@
-#N canvas 713 533 450 300 10;
-#X obj 16 156 cast.client~;
-#X obj 16 279 dac~;
-#X text 19 29 [cast.client~];
-#X text 19 80 Coloque o IP de streaming \, porta e o ponto de montagem
-(um arquivo com extensão .ogg);
-#X text 12 123 gcravista@gmail.com (2011);
-#X connect 0 0 1 0;
-#X connect 0 1 1 1;
