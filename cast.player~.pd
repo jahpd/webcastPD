@@ -1,4 +1,4 @@
-#N canvas 1 50 638 749 10;
+#N canvas -2 27 638 749 10;
 #X obj 427 193 oggread~;
 #X msg 36 251 set open \$1;
 #X msg 24 291 open /home/guilherme/Github/labic_patchs/music//01-vinheta.ogg
@@ -27,9 +27,9 @@ black red;
 #X obj 497 198 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 446 10 t b b b b;
-#X floatatom 667 342 5 0 0 0 - - -;
-#X obj 667 285 count 2;
 #X obj 42 357 print READING;
+#X obj 667 339 print NEXT MUSIC:;
+#X obj 667 285 count 100;
 #X connect 0 0 5 0;
 #X connect 0 1 6 0;
 #X connect 0 2 13 0;
@@ -49,12 +49,12 @@ black red;
 #X connect 19 0 4 0;
 #X connect 19 1 2 0;
 #X connect 19 2 1 0;
-#X connect 19 2 25 0;
+#X connect 19 2 23 0;
 #X connect 20 0 14 0;
 #X connect 20 1 22 0;
-#X connect 21 0 24 0;
-#X connect 22 1 24 0;
+#X connect 21 0 25 0;
+#X connect 22 1 25 0;
 #X connect 22 2 15 0;
 #X connect 22 3 11 0;
-#X connect 24 0 16 0;
-#X connect 24 0 23 0;
+#X connect 25 0 16 0;
+#X connect 25 0 24 0;
