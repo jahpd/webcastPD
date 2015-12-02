@@ -1,8 +1,7 @@
-#N canvas -2 27 638 749 10;
+#N canvas 1 50 638 749 10;
 #X obj 427 193 oggread~;
 #X msg 36 251 set open \$1;
-#X msg 24 291 open /home/guilherme/Github/labic_patchs/music//01-vinheta.ogg
-;
+#X msg 24 291 open /home/guilherme/Github/webcastPD/cast-help.pd;
 #X obj -3 -80 playlist all 400 300 {Helvetica 10 bold} #457782 yellow
 black red;
 #X msg 465 157 start;
@@ -11,7 +10,7 @@ black red;
 #X obj 427 285 outlet~;
 #X obj 480 284 outlet~;
 #X obj 477 -87 inlet;
-#N canvas 0 0 450 300 (subpatch) 0;
+#N canvas -3 -23 450 300 (subpatch) 0;
 #X coords 0 1 100 -1 200 140 1;
 #X restore 100 20 graph;
 #X obj 485 45 symbol \$1;
@@ -29,7 +28,8 @@ black red;
 #X obj 446 10 t b b b b;
 #X obj 42 357 print READING;
 #X obj 667 339 print NEXT MUSIC:;
-#X obj 667 285 count 100;
+#X obj 549 195 random 100;
+#X floatatom 549 223 5 0 0 0 - - -;
 #X connect 0 0 5 0;
 #X connect 0 1 6 0;
 #X connect 0 2 13 0;
@@ -56,5 +56,6 @@ black red;
 #X connect 22 1 25 0;
 #X connect 22 2 15 0;
 #X connect 22 3 11 0;
+#X connect 25 0 26 0;
 #X connect 25 0 16 0;
-#X connect 25 0 24 0;
+#X connect 26 0 24 0;
