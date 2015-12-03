@@ -1,13 +1,12 @@
+#!/bin/python
+
 from optparse import OptionParser
 from subprocess import call
 
-
-#import inspect
-
 # PROGRAMA PRINCIPAL
-PROG = "RadioLabicRuntime"
-VERSION = "0.0.1"
-description = "Script python para inicializar todos os programas necessarios"
+PROG = "webcastPD runtime"
+VERSION = "0.0.2"
+description = "Script python para realização de um streaming em uma rede remota"
 parser = OptionParser(usage='usage: %prog [OPTIONS, [ARGS]]',
                       version='%s %s' % (PROG, VERSION),
                       description=description)
@@ -141,16 +140,13 @@ cast_client = ("#N canvas 1 440 1278 358 10;",
                "#X connect 20 0 12 0;",
                "#X coords 0 358 1 357 50 40 0;")
 
+files = [(open("main.pd", "w"), main)
+          open("gen_cast.server.simple~.pd", "w"), cast_server),
+          open("gen_cast.client.simple~.pd", "w"), cast_client)]
 
-f = open("main.pd", "w")
-g = open("gen_cast.server.simple~.pd", "w")
-h = open("gen_cast.client.simple~.pd", "w")
-f.write("\n".join(main))
-g.write("\n".join(cast_server))
-h.write("\n".join(cast_client))
-f.close()
-g.close()
-h.close()
+for (f, s) in files:
+    f.write("\n".join(s))
+    f.close()
 
 #from subprocess import call
 call(["pd-extended", "-nogui", "-noadc", "-alsa", "main.pd"])
