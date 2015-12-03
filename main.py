@@ -13,8 +13,13 @@ parser = OptionParser(usage='usage: %prog [OPTIONS, [ARGS]]',
                       description=description)
 
 # Opcoes do programa
-opt =  [("p", "path", None, "caminho da pasta contendo uma lista de musicas"),
-        ("P", "password", None, "senha do servidor giss.tv")]
+opt =  [("H", "host", None, "host, ou ip do servidor que realizara o streaming (p.e., giss.tv ou 192.168.0.1)"),
+        ("m", "music-path", None, "caminho da pasta local contendo uma lista de musicas"),
+        ("l", "listen", None, "caminho do ponto de montagem a ser realizado o streaming [suporte a vorbis] (p.e. listen.ogg)"), 
+        ("p", "port", None, "porta de servico (p.e. 8000 ou 8001)"),
+        ("x", "password", None, "senha do servidor giss.tv"),
+        
+    ]
 
 # Create a list of tuples
 # to create a list of options
@@ -34,10 +39,10 @@ for word in opt:
 
 main = ("#N canvas 1 50 638 359 10;",
         "#X text 0 0 ITS A GENERATED PATCH. DO NOT MODIFY!;", 
-        "#X obj 1 77 cast.player~ "+options.path+" ;", # /home/guilherme/Github/labic_patchs/music
+        "#X obj 1 77 cast.player~ "+options.music_path+" ;", # p.e. /home/pi/Musics
         "#X obj 1 37 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1;",
         "#X obj 1 107 gen_cast.server.simple~;", 
-        "#X obj 0 131 cast.client.simple~ 5000;",
+        "#X obj 0 131 gen_cast.client.simple~ 5000;",
         "#X obj 1 18 loadbang;",
         "#X obj 1 56 t f f;",
         "#X obj 0 159 dac~;",
@@ -67,7 +72,7 @@ cast_server= ("#N canvas 1 50 1278 358 10;",
               "#X msg 359 171 print;",
               "#X obj 339 60 t b b b b b;",
               "#X msg 392 114 passwd "+options.password+" ;",
-              "#X msg 317 211 connect giss.tv radiolabic.ogg 8000;",
+              "#X msg 317 211 connect "+options.host+" "+options.listen+" "+options.port+" ;",
               "#X obj 36 188 outlet;",
               "#X connect 0 0 4 0;",
               "#X connect 0 0 14 0;",
@@ -89,13 +94,63 @@ cast_server= ("#N canvas 1 50 1278 358 10;",
               "#X connect 12 0 0 0;",
               "#X connect 13 0 0 0;")
 
+cast_client = ("#N canvas 1 440 1278 358 10;",
+               "#X obj 21 264 outlet~;",
+               "#X msg 23 120 disconnect;",
+               "#X obj 76 261 outlet~;",
+               "#X obj 22 223 *~ 1;",
+               "#X obj 63 224 *~ 1;",
+               "#X obj 22 -13 inlet;",
+               "#X obj 23 14 sel 0 1;",
+               "#X msg 163 111 print;",
+               "#X obj 22 190 oggamp~ 1 2 512;",
+               "#X obj 191 227 print cast.client.simple~:;",
+               "#X msg 193 204 connected;",
+               "#X obj 151 178 == 1;",
+               "#X msg 159 88 connect "+options.host+" "+options.listen+" "+options.port+" ;",
+               "#X obj 85 31 t b b;",
+               "#X obj 151 260 == 0;",
+               "#X obj 189 281 print cast.client.simple~:;",
+               "#X msg 193 258 disconnected;",
+               "#X obj 112 53 delay;",
+               "#X obj 141 23 \$1;",
+               "#X obj 141 -1 loadbang;",
+               "#X obj 214 158 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1 -1;",
+               "#X obj 108 289 outlet;",
+               "#X connect 1 0 8 0;",
+               "#X connect 3 0 0 0;",
+               "#X connect 4 0 2 0;",
+               "#X connect 5 0 6 0;",
+               "#X connect 6 0 1 0;",
+               "#X connect 6 1 13 0;",
+               "#X connect 7 0 8 0;",
+               "#X connect 8 0 3 0;",
+               "#X connect 8 1 4 0;",
+               "#X connect 8 2 11 0;",
+               "#X connect 8 2 21 0;",
+               "#X connect 10 0 9 0;",
+               "#X connect 11 0 10 0;",
+               "#X connect 12 0 8 0;",
+               "#X connect 13 0 20 0;",
+               "#X connect 13 1 17 0;",
+               "#X connect 14 0 16 0;",
+               "#X connect 16 0 15 0;",
+               "#X connect 17 0 20 0;",
+               "#X connect 18 0 17 1;",
+               "#X connect 19 0 18 0;",
+               "#X connect 20 0 12 0;",
+               "#X coords 0 358 1 357 50 40 0;")
+
 
 f = open("main.pd", "w")
 g = open("gen_cast.server.simple~.pd", "w")
+h = open("gen_cast.client.simple~.pd", "w")
 f.write("\n".join(main))
 g.write("\n".join(cast_server))
+h.write("\n".join(cast_client))
 f.close()
 g.close()
+h.close()
 
 #from subprocess import call
-call(["pd-extended", "-noadc", "-alsa", "main.pd"])
+call(["pd-extended", "-nogui", "-noadc", "-alsa", "main.pd"])
