@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 
 from optparse import OptionParser
 from subprocess import call
@@ -6,7 +6,7 @@ from subprocess import call
 # PROGRAMA PRINCIPAL
 PROG = "webcastPD runtime"
 VERSION = "0.0.2"
-description = "Script python para realização de um streaming em uma rede remota"
+description = "Script python para realizacao de um streaming em uma rede remota"
 parser = OptionParser(usage='usage: %prog [OPTIONS, [ARGS]]',
                       version='%s %s' % (PROG, VERSION),
                       description=description)
@@ -17,8 +17,7 @@ opt =  [("H", "host", None, "host, ou ip do servidor que realizara o streaming (
         ("l", "listen", None, "caminho do ponto de montagem a ser realizado o streaming [suporte a vorbis] (p.e. listen.ogg)"), 
         ("p", "port", None, "porta de servico (p.e. 8000 ou 8001)"),
         ("x", "password", None, "senha do servidor giss.tv"),
-        
-    ]
+]
 
 # Create a list of tuples
 # to create a list of options
@@ -36,12 +35,16 @@ for word in opt:
 # Capturar os argumentos passados pelo 
 (options, args) = parser.parse_args()
 
+#Nome da estacao vem do ponto de montagem?
+station = options.listen.split(".ogg")[0]
+
+# Patch de PD principal
 main = ("#N canvas 1 50 638 359 10;",
         "#X text 0 0 ITS A GENERATED PATCH. DO NOT MODIFY!;", 
-        "#X obj 1 77 cast.player~ "+options.music_path+" ;", # p.e. /home/pi/Musics
+        "#X obj 1 77 cast.player~ %s ;" % options.music_path,                  # p.e. /home/pi/Musics
         "#X obj 1 37 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1;",
-        "#X obj 1 107 gen_cast.server.simple~;", 
-        "#X obj 0 131 gen_cast.client.simple~ 5000;",
+        "#X obj 1 107 /home/pi/.radio/%s_server~ ;" % station, 
+        "#X obj 0 131 /home/pi/.radio/%s_client~ 5000 ;" % station,
         "#X obj 1 18 loadbang;",
         "#X obj 1 56 t f f;",
         "#X obj 0 159 dac~;",
@@ -70,8 +73,8 @@ cast_server= ("#N canvas 1 50 1278 358 10;",
               "#X msg 367 143 vorbis 44100 2 133 128 96;",
               "#X msg 359 171 print;",
               "#X obj 339 60 t b b b b b;",
-              "#X msg 392 114 passwd "+options.password+" ;",
-              "#X msg 317 211 connect "+options.host+" "+options.listen+" "+options.port+" ;",
+              "#X msg 392 114 passwd %s ;" % options.password,
+              "#X msg 317 211 connect %s %s %s ;" % (options.host, options.listen, options.port),
               "#X obj 36 188 outlet;",
               "#X connect 0 0 4 0;",
               "#X connect 0 0 14 0;",
@@ -106,7 +109,7 @@ cast_client = ("#N canvas 1 440 1278 358 10;",
                "#X obj 191 227 print cast.client.simple~:;",
                "#X msg 193 204 connected;",
                "#X obj 151 178 == 1;",
-               "#X msg 159 88 connect "+options.host+" "+options.listen+" "+options.port+" ;",
+               "#X msg 159 88 connect %s %s %s;" % (options.host, options.listen, options.port),
                "#X obj 85 31 t b b;",
                "#X obj 151 260 == 0;",
                "#X obj 189 281 print cast.client.simple~:;",
@@ -140,13 +143,13 @@ cast_client = ("#N canvas 1 440 1278 358 10;",
                "#X connect 20 0 12 0;",
                "#X coords 0 358 1 357 50 40 0;")
 
-files = [(open("main.pd", "w"), main)
-          open("gen_cast.server.simple~.pd", "w"), cast_server),
-          open("gen_cast.client.simple~.pd", "w"), cast_client)]
+files = [(open("/home/pi/.radio/%s.pd"         % station, "w"), main),
+         (open("/home/pi/.radio/%s_server~.pd" % station, "w"), cast_server),
+         (open("/home/pi/.radio/%s_client~.pd" % station, "w"), cast_client)]
 
 for (f, s) in files:
     f.write("\n".join(s))
     f.close()
 
 #from subprocess import call
-call(["pd-extended", "-nogui", "-noadc", "-alsa", "main.pd"])
+call(["pd-extended", "-nogui", "-noadc", "-nomidi", "-path", "/home/pi/Github/webcastPD", "/home/pi/.radio/%s.pd" % station])

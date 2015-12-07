@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm /home/pi/.radio/*.log
+giss.tv $(cat /home/pi/.radio/minharadio.conf)

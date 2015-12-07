@@ -1,47 +1,53 @@
 # webcastPD
 
-------------------
-Objetivos técnicos
-------------------
-pensado como uma framework de abstractions (com futura adição de externals?) para streaming em realtime;
+Uma ferramenta de abstractions de PD e script python, para automatização de streaming no Raspberry Pi;
 
---------------------
-Objetivos artísticos
---------------------
-permitir uma dinamização de streaming simultâneos; inserção facilitada de efeitos;
+## Instalação
 
---------------------
-Usando
---------------------
-[cast.client~]
+Este programa supõe que tens o pd-extended, python e rake instalado no seu raspberry pi (até agora, conseguimos rodar em um debian _Jessie_)
 
-Insira nos campos solicitados o IP do site da onde quer RECEBER o streaming (tente por exemplo algum canal no site http://giss.tv), a porta (geralmente 8000) e o ponto de montagem (geralmente um arquivo com extensão .ogg); clique em connect e espere o toogle sinalizar que está conectado;
+    $ sudo apt-get install pd-extended python
+    
+### Clone o projeto
 
-Input: -
-Outputs: estereo de 2 canais
+    $ git clone https://www.github.com/jahpd/webcastPD
 
-[cast.server~]
+### Crie uma pasta em /home/pi
 
+    $ mkdir /home/pi/.radio
 
-Insira nos campos solicitados o IP do site da one quer ENVIAR o streaming (tente por exemplo algum canal no site http://giss.tv), a porta (geralmente 8000) e o ponto de montagem (geralmente um arquivo com extensão .ogg); clique em connect e espere o toogle sinalizar que está conectado;
+### Instale alguns arquivos em `/usr/local/bin`
 
-Verifique como está o andamento das ogg pages no seu servidos (se a atom box localizada no canvas connection estiver com aumento progressivo de valores, o streaming está fluindo ;)
+Instalação dos executáveis:
 
-Opcionalmente vc pode inserir tags para caracterizar sua transmissão
+    $ cd webcastPD/
+    $ sudo cp radio* /usr/local/bin/
+    $ sudo cp giss.tv /usr/local/bin/
+    $ sudo cp webcast /usr/local/bin/
+    
+E arquivos de configuração (modifique-os de acordo com sua estação)
 
-Input: estéreo de 2 canais
-Output: -
+    $ sudo cp minharadio.conf ~/.radio/
 
---------------------
-TODO
---------------------
-Estrutura de básica de cliente e servidor facilitados para qq tipo de usuário, iniciante ou avançado em PD
+Por exemplo, preferimos colocar a pasta de música dentro de .radio
 
-Plugins diversos 
+    giss.tv 8000 minhaestacao.ogg /home/pi/.radio/Musics minhasenha
 
---------------------
-FIXME
---------------------
+# Execução
 
-[cast.server~]
-Ainda não foi implementado a parte de qualidade de transmissão
+Adicionamos a seguinte linha em `/etc/rc.local` para execução do programa, assim que o raspberry pi estiver no final do boot:
+
+    $ sudo /usr/local/bin/radio-init
+
+Ou simplismente:
+
+    $ sudo giss.tv $(cat /home/pi/.radio/minharadio.conf)
+    
+## Verifique se está rodando:
+
+    $ radio-check
+
+# TODO
+
+- Automatizar todos os passos anteriores, ou criar um pacote .deb?
+- Verificar problemas de segurnaça nos arquivos supracitados ?  
