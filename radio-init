@@ -1,4 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-rm /home/pi/.radio/*.log
-giss.tv $(cat /home/pi/.radio/minharadio.conf)
+VERSION="0.0.1"
+echo "<== radio-init $VERSION ==>"
+
+RADIO=~pi/.radio
+STATION=$RADIO/$1
+RAKEFILE=$RADIO/Rakefile
+DPC=~pi/.dropbox_uploader
+
+rake --trace -f $RAKEFILE init "STATION=$STATION" "ICECAST_HOST=$2" "PSK=$3 DROPBOX_CONF=$DPC"
+
+

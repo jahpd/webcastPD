@@ -4,50 +4,71 @@ Uma ferramenta de abstractions de PD e script python, para automatização de st
 
 ## Instalação
 
-Este programa supõe que tens o pd-extended, python e rake instalado no seu raspberry pi (até agora, conseguimos rodar em um debian _Jessie_)
+Este programa supõe que tens o [pd-extended](http://puredata.info/downloads/pd-extended), python e rake instalado no seu raspberry pi (até agora, conseguimos rodar em um debian [_Jessie_](https://www.raspberrypi.org/downloads/raspbian/)):
 
     $ sudo apt-get install pd-extended python
+
+Provavelmente seu raspberry já vem com Ruby. Portanto execute o comando:
+
+    $ sudo gem install rake
     
 ### Clone o projeto
 
+No seu raspberry, execute:
+
+    $ cd ~
+    $ mkir ~/Github
+    $ cd ~/Github
     $ git clone https://www.github.com/jahpd/webcastPD
 
 ### Crie uma pasta em /home/pi
 
     $ mkdir /home/pi/.radio
 
-### Instale alguns arquivos em `/usr/local/bin`
+### Copie alguns arquivos para um local apropriado:
 
-Instalação dos executáveis:
-
-    $ cd webcastPD/
-    $ sudo cp radio* /usr/local/bin/
-    $ sudo cp giss.tv /usr/local/bin/
-    $ sudo cp webcast /usr/local/bin/
+    $ cp ~/Github/webcastPD/radio-* /usr/local/bin/
+    $ cp ~/Github/webcastPD/Rakefile ~/.radio/
     
-E arquivos de configuração (modifique-os de acordo com sua estação)
-
-    $ sudo cp minharadio.conf ~/.radio/
-
-Por exemplo, preferimos colocar a pasta de música dentro de .radio
-
-    giss.tv 8000 minhaestacao.ogg /home/pi/.radio/Musics minhasenha
-
 # Execução
 
-Adicionamos a seguinte linha em `/etc/rc.local` para execução do programa, assim que o raspberry pi estiver no final do boot:
+Esses são alguns comandos para
 
-    $ sudo /usr/local/bin/radio-init
+  - Inicialização de uma estação, backup e downloads de áudios para uma estação
+  - Execução de uma estação
+  - Verificação de uma estação
+  - Playlist de uma estação
+  
+## Inicialização
 
-Ou simplismente:
+A inicialização requer que já tenha um servidor [Icecast2](http://icecast.org/), no caso de um `localhost`. Uma opção é usar um já configurado, como o [Giss.tv](http://giss.tv/):
 
-    $ sudo giss.tv $(cat /home/pi/.radio/minharadio.conf)
+    $ radio-init minharadio localhost senha
+    $ radio-init minharadio giss.tv senha
     
-## Verifique se está rodando:
+Após a inicialização, edite os arquivos ~/.radio/minhaestacao/station.conf. Modifique o parâmetro `-x` para a senha do seu servidor icecast.
 
-    $ radio-check
+## Execução
 
+    $ radio-play minharadio
+
+Muitas coisas irão aparecer, portanto talvez seja melhor:
+    
+    $ nohup radio-play minharadio > /home/pi/.radio/minharadio/station.log 2>&1&
+
+# Verificação
+
+Verifique se sua rádio está transmitindo:
+
+    $ radio-check minharadio
+
+# Playlist
+
+Olhe as músicas da sua estação
+
+    $ radio-playlist minharadio
+    
 # TODO
 
-- Automatizar todos os passos anteriores, ou criar um pacote .deb?
+- Automatizar todos os passos anteriores, ou criar um pacote `.deb`?
 - Verificar problemas de segurnaça nos arquivos supracitados ?  

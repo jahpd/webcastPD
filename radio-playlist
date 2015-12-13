@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ls ~pi/.radio/$1/Musics/

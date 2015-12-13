@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "=> Killing all pd-extended instances and init PureData"
+echo "WARN: use radio-check $STATION station"
+#killall pd-extended
+STATION=~pi/.radio/$1
+RAKEFILE=~pi/.radio/Rakefile
+rake --trace -f $RAKEFILE pd:start "STATION=$STATION"
