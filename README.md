@@ -27,7 +27,7 @@ No seu raspberry, execute:
 
 ### Copie alguns arquivos para um local apropriado:
 
-    $ cp ~/Github/webcastPD/radio-* /usr/local/bin/
+    $ cp ~/Github/webcastPD/radio-* ~/.radio/ 
     $ cp ~/Github/webcastPD/Rakefile ~/.radio/
     
 # Execução
@@ -43,11 +43,38 @@ Esses são alguns comandos para
 
 A inicialização requer que já tenha um servidor [Icecast2](http://icecast.org/), no caso de um `localhost`. Uma opção é usar um já configurado, como o [Giss.tv](http://giss.tv/):
 
-    $ radio-init minharadio localhost senha
-    $ radio-init minharadio giss.tv senha
-    
-Após a inicialização, edite os arquivos ~/.radio/minhaestacao/station.conf. Modifique o parâmetro `-x` para a senha do seu servidor icecast.
+    $ radio-init nyancat localhost
+    $ radio-init nyancat giss.tv
 
+## Sincronização com o Dropbox:
+
+No primeiro acesso será solicitado a configuração do seu dropbox. Siga essas [instruções](http://raspi.tv/2013/how-to-use-dropbox-with-raspberry-pi).
+
+## Sincronização com o Youtube
+
+Com o dropbox sincronizado, crie um arquivo chamado `list.json` no seguinte formato:
+
+- Data
+- Lista de vídeos
+
+    {
+	"01-01-16":[
+	    "https://www.youtube.com/watch?v=wZZ7oFKsKzY"
+	    //and other stufs...
+        ]
+    }
+
+
+Outro arquivo deve ser criado `station.json` no Dropbox. .
+
+    {
+	"host": "localhost",
+	"port": "8000",
+	"listen": "nyancat.ogg",
+	"playlist": ".radio/nyancat/Musics/",
+	"password": "mypsswd"
+    }
+    
 ## Execução
 
     $ radio-play minharadio

@@ -1,88 +1,62 @@
+# coding: utf-8
 require "json"
 require 'fileutils'
 
 desc "build, backup and dowload things"
 task :init do
-  Rake::Task["build:station"].invoke
-  Rake::Task["build:configure"].invoke
-  Rake::Task["dropbox:upload"].invoke
-  Rake::Task["download:youtube"].invoke
-end
-
-def generate_json(station)
-  File.open("#{station}/list.json", "w") do |file|
-    url = ""        
-    json = """//Generated at #{Time.now}
-{
-  \"#{Time.now.strftime("%d-%m-%y")}\":[
-    \"https:\/\/www.youtube.com\/watch?v=CG05gJ6uqP4\",
-    \"https:\/\/www.youtube.com\/watch?v=aKq-LRYv1Q4\",
-    \"https:\/\/www.youtube.com\/watch?v=3Z42ZR2mPdY\",
-    \"https:\/\/www.youtube.com\/watch?v=vfNT20L2mSo\",
-    \"https:\/\/www.youtube.com\/watch?v=w2sDV6Ylf48\",
-    \"https:\/\/www.youtube.com\/watch?v=sX-xhjEcWZk\",
-    \"https:\/\/www.youtube.com\/watch?v=PMWonO8jsdU\",
-    \"https:\/\/www.youtube.com\/watch?v=RsH0lCPYANA\",
-    \"https:\/\/www.youtube.com\/watch?v=SSOMWwr0s9M\",
-    \"https:\/\/www.youtube.com\/watch?v=gn8B-L2CMso\",
-    \"https:\/\/www.youtube.com\/watch?v=_qWPCoayhjY\",
-    \"https:\/\/www.youtube.com\/watch?v=AHORp418B6s\",
-    \"https:\/\/www.youtube.com\/watch?v=CD_61GzSvi4\",
-    \"https:\/\/www.youtube.com\/watch?v=TjDBhmVqn4E\",
-    \"https:\/\/www.youtube.com\/watch?v=v48o30LOJ2M\"
-]
-}"""
-    file.write(json)
-  end
+  ["build:station", "build:configure", "dropbox:download:configuration","dropbox:download:audios","download:youtube", "dropbox:upload:all", "pd:init"].each{|task| Rake::Task[task].invoke}
 end
 
 namespace :build do
 
   desc "build station folder"
   task :station do
-    dir = File.directory?(ENV['STATION'])
-    if not dir
+    if not File.directory?(ENV['STATION'])
       station = ENV['STATION']
-      ["", "Musics"].each{|e| FileUtils.mkdir("#{station << s}"); puts "=>    created #{station << s}"}
+      FileUtils.mkdir("#{station}/")
       FileUtils.touch("#{station}/station.log")
-      puts "=>    created #{station}/station.log"   
-    elsif
-      puts "=> Skipping due to existing configuration"
+    else
+      puts "=> Skipping build"
     end
   end
 
   desc "configure login and list files"
   task :configure do
-    stationname= ENV['STATION'].split("/")
-    stationname= stationname[stationname.length-1]
-    
-    # Create configuration file
-    puts "=> Creating #{ENV['STATION']}/station.conf"
-    File.open("#{ENV['STATION']}/station.conf", "w") do |file|
-      file.write("""-H #{ENV['ICECAST_HOST']} -p 8000 -l #{stationname}.ogg -m #{ENV['STATION']}/Musics -x stationpsk""")
-    end
-      
-    # Create a list of musics
-    puts "=> Creating  #{ENV['STATION']}/list.json"
-    generate_json(ENV['STATION'])
-    puts "=> please change your password at #{ENV['STATION']}/station.conf"
-    puts "=> please change your playlist at #{ENV['STATION']}/list.json" 
+    if not File.directory?(ENV['STATION'])
+      stationname= ENV['STATION'].split("/")
+      stationname= stationname[stationname.length-1]
+      s = ENV['STATION'].gsub(".","\.")
+      hash = Hash.new
+      hash["host"] = ENV['ICECAST_HOST']
+      hash["port"] = '8000'
+      hash["listen"] = "#{stationname}.ogg"
+      hash["music-path"] = "#{s}/Musics"
+      parse hash["music-path"]
+      hash["password"] = "mypass"
+      puts "=> creating #{ENV['STATION']}/station.json"
+      File.open("#{ENV['STATION']}/station.json", "w").open do |file|
+        file.write(JSON.pretty_generate(hash).force_encoding("utf-8"))
+      end
+       
+      sh "dropbox_uploader download /list.json #{ENV['STATION']}/list.json"
+      puts "=> please change your password at #{ENV['STATION']}/station.json"
+      puts "=> please change your playlist at #{ENV['STATION']}/list.json"
+    end   
   end
 end
-
 
 namespace :download do
 
   desc "download from youtube"
   task :youtube do
-!    # Read from json a playlist
+    
     file = File.read("#{ENV['STATION']}/list.json")
     json = JSON.parse(file).each_pair do |k, v|
       # Check the date to download
       # new musics
       time = Time.now.strftime("%d-%m-%y")
       if k == time
-
+        
         # Check if backup was already done
         if not File.file?("#{ENV['STATION']}/Musics/#{time}.tar.gz")
           # If not, them download
@@ -107,54 +81,92 @@ namespace :download do
       end
     end
     sh "echo '=> DONE'"
-  end
-
+  end  
 end
- 
-namespace :dropbox do
 
-  desc "upload files (with specific extensions) in a folder to dropbox"
-  task :upload do
-    station = ENV['STATION'].split("/")
-    station = station[station.size-1]
-    json = {"#{ENV['STATION']}Musics/*.ogg" => "#{station}/Musics/",
-            "*.log" => "#{station}/",
-            "*.json" => "#{station}/",
-            "Rakefile" => "/"}
-   
-    json.each_pair do |k, v|
-      if v=="Musics/"
-        if not Dir.glob("#{ENV['STATION']}/#{v}*.ogg").empty?
-          time = Time.now.strftime("%d-%m-%y")
-          oldmusics = "#{ENV['STATION']}/OldMusics"
-          tar = "tar -cf #{oldmusics}/#{time}.tar"
-          Dir.glob("#{ENV['STATION']}/#{k}/*.ogg") do |file|
-            file.gsub!("\ ","\\ ")
-            file.gsub!("(", "\\(")
-            file.gsub!(")", "\\)")
-            file.gsub!("'", "\\\\'")
-            file.gsub!("\"", "\\\"")
-            tar << " #{file}"
-          end
+def parse(file)
+  array = [
+   ["\ ","\\ "],
+   ["(", "\\("],
+   [")", "\\)"],
+   ["'", "\\\\'"],
+   ["\"", "\\\""],
+   [",","\\,"],
+   ["á","a"],
+   ["é","e"],
+   ["í","i"],
+   ["ó","o"],
+   ["ú", "u"]
+  ].each{|e| file.gsub!(e[0],e[1])}
+end
+
+namespace :dropbox do
+  namespace :upload do
+
+    desc "upload configurations"
+    task :all do
+      station = ENV['STATION'].split("/") 
+      
+      path= ENV['STATION']
+      time = Time.now.strftime("%d-%m-%y")
+      tar = "tar -cf #{time}.tar #{file}"
+      Dir.glob("#{path}/Musics/*.ogg") do |file|
+        parse file
+        tar << " #{file}"
+      end
+            
+      sh "#{tar}"
+      sh "bzip2 -zvs9 #{time}.tar"
+      sh "dropbox_uploader -f #{ENV['DROPBOX_CONF']} upload #{time}.tar.bz2 /Old/"
+      rm "#{time}.tar*"
+      puts "=> DONE"
+    end
+  end
+  
+  namespace :download do
+    
+    desc "download configurations"
+    task :configuration do
+      sh "dropbox_uploader -f #{ENV['DROPBOX_CONF']} download /list.json #{ENV['STATION']}/list.json"
+    end
+    
+    desc "download audio from dropbox"
+    task :audios do
+      sh "rm -f #{ENV['STATION']}/Musics/*.ogg"
+      sh "dropbox_uploader -s -f #{ENV['DROPBOX_CONF']} -s download Musics/ #{ENV['STATION']}"
+      
+      Dir.glob("#{ENV['STATION']}/Musics/*.wav") do |file|
+        parse file
+        name = file.split("/")
+        name = name[name.size-1].split(".wav")[0]
         
-          sh "#{tar}"
-          sh "bzip2 -zvs9 #{oldmusics}.tar"
-          sh "dropbox_uploader -s -f #{ENV['DROPBOX_CONF']} upload #{oldmusics}.tar.bz2 #{station}/Musics/"
-          sh "rm #{oldmusics}.tar"
-          sh "rm #{oldmusics}.tar.bz2"
-        else
-          puts "=> Skipping upload due to empty files"
-        end
-        puts "=> DONE'"
+        puts "=> Converting some .wav files"
+        sh "ffmpeg -i #{file} -acodec libvorbis #{ENV['STATION']}/Musics/#{name}.ogg"
+        sh "rm #{file}"
       end
     end
   end
 end
 
+
 namespace :pd do
 
-  desc "Start PureData scheduller"
+  desc "Start PureData scheduller, loaded by a json configuration file."
   task :start do
-    sh "webcast $(cat #{ENV['STATION']}/station.conf)"
+    webcast = "webcast"
+    begin
+      JSON.parse("#{ENV['STATION']}/station.json").each_pair {|k, v|
+        if k == "password" and v == "mystring"
+          puts "=> WARN: You need set your password in #{ENV['STATION']}/station.json. But you can add here (INSECURE):"
+          v = gets.chomp
+        end
+        string << " --#{k} #{v}"
+      }
+      sh webcast
+    rescue Exception=>e
+      puts e
+      exit
+    end
   end
+
 end

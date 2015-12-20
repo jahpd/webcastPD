@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 
-VERSION="0.0.1"
-echo "<== radio-init $VERSION ==>"
-
 RADIO=~pi/.radio
 STATION=$RADIO/$1
-RAKEFILE=$RADIO/Rakefile
-DPC=~pi/.dropbox_uploader
+RAKEFILE=~pi/.radio/Rakefile
 
-rake --trace -f $RAKEFILE init "STATION=$STATION" "ICECAST_HOST=$2" "PSK=$3 DROPBOX_CONF=$DPC"
-
+rake --trace -f $RAKEFILE init "STATION=$STATION" "ICECAST_HOST=$2" "DROPBOX_CONF=/home/pi/.dropbox_uploader"
 
